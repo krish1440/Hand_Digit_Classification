@@ -42,7 +42,7 @@ The application will be available at `http://127.0.0.1:5000/`
 5. The result and probability distribution are displayed on the frontend.
 
 ## Web app live 
-[web app live]:https://web-production-ba08.up.railway.app/
+[web app live]:(https://web-production-ba08.up.railway.app/)
 
 ## License
 This project is licensed under the MIT License.
