@@ -11,7 +11,7 @@ This is a web-based Handwritten Digit Recognition application using a deep learn
 - Responsive UI for mobile and desktop support
 
 ## Tech Stack
-- **Frontend:** HTML, CSS
+- **Frontend:** HTML, CSS ,JS
 - **Backend:** Flask (Python)
 - **Deep Learning Model:** TensorFlow/Keras trained on MNIST dataset
 
