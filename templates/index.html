@@ -208,6 +208,51 @@
 </head>
 <body>
     <div class="container">
+        
+        <div class="links-section">
+            <div class="social-links">
+                <a href="https://github.com/krish1440/Hand_Digit_Classification" target="_blank" rel="noopener noreferrer">
+                    <img src="https://cdnjs.cloudflare.com/ajax/libs/simple-icons/3.0.1/github.svg" alt="GitHub" width="24" height="24">
+                    Source Code
+                </a>
+                <a href="https://www.linkedin.com/in/krish-chaudhary-krc8252" target="_blank" rel="noopener noreferrer">
+                    <img src="https://cdnjs.cloudflare.com/ajax/libs/simple-icons/3.0.1/linkedin.svg" alt="LinkedIn" width="24" height="24">
+                    LinkedIn
+                </a>
+            </div>
+        </div>
+        
+        <style>
+            .links-section {
+                text-align: center;
+                padding: 10px 0;
+                background-color: #f8f9fa;
+                border-radius: 5px;
+                margin-bottom: 15px;
+            }
+            .social-links {
+                display: flex;
+                justify-content: center;
+                gap: 20px;
+            }
+            .social-links a {
+                text-decoration: none;
+                color: #2c3e50;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                font-size: 14px;
+                transition: color 0.3s;
+            }
+            .social-links a:hover {
+                color: #3498db;
+            }
+            .social-links img {
+                vertical-align: middle;
+            }
+        </style>
+        <body>
+
         <h1>Handwritten Digit Recognition</h1>
         
         <div class="instructions">
@@ -230,7 +275,7 @@
             <div class="confidence">Confidence: <span id="confidence">-</span>%</div>
             
             <h3>Probability Distribution</h3>
-            <div class="probabilities" id="probabilities-container"></div>
+            <div class="probabilities" id="probabilities-container"></div> 
         </div>
     </div>
 
