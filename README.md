@@ -113,4 +113,3 @@ The model is a **Convolutional Neural Network (CNN)** trained on the MNIST datas
 
 ---
 
-<p align="center">Made with ❤️ and ☕ by Krish</p>
