@@ -1,138 +1,95 @@
-from flask import Flask, request, jsonify, render_template
-import numpy as np
-try:
-    import tflite_runtime.interpreter as tflite
-except ImportError:
-    import tensorflow.lite as tflite
-import base64
-import re
-import cv2
 import os
+import base64
+import numpy as np
+import tensorflow as tf
+from flask import Flask, render_template, request, jsonify
 from PIL import Image
-from io import BytesIO
-import matplotlib.pyplot as plt
+import io
 
-app = Flask(__name__, static_folder='static')
+app = Flask(__name__)
 
-# Load TFLite model
-model_path = 'models/model.tflite'
-# Check for model.tflite, but don't crash yet if missing (let user convert)
+# Load TFLite Model
+MODEL_PATH = "model/mnist_model.tflite"
 interpreter = None
 
-def load_interpreter():
+def load_model():
     global interpreter
-    if not os.path.exists(model_path):
-        # Fallback for dev if conversion hasn't happened yet
-        return None
-        
-    if interpreter is None:
-        interpreter = tflite.Interpreter(model_path=model_path)
+    try:
+        interpreter = tf.lite.Interpreter(model_path=MODEL_PATH)
         interpreter.allocate_tensors()
-    return interpreter
+        print("TFLite Model loaded successfully.")
+    except Exception as e:
+        print(f"Error loading model: {e}")
+
+load_model()
+
+def preprocess_image(image_data):
+    # Decode base64 image
+    img_bytes = base64.b64decode(image_data.split(',')[1])
+    img = Image.open(io.BytesIO(img_bytes)).convert('L')  # Grayscale
+    
+    # Resize to 28x28
+    img = img.resize((28, 28))
+    
+    # Invert colors (Canvas is black on white, MNIST is white on black)
+    # The canvas logic usually draws black on white. 
+    # If the user draws black digits on white background:
+    # We need to invert it to match MNIST (white digits on black background).
+    img_array = np.array(img)
+    img_array = 255 - img_array
+    
+    # Normalize to [0, 1]
+    img_array = img_array.astype("float32") / 255.0
+    
+    # Reshape for model (1, 28, 28, 1)
+    img_array = np.expand_dims(img_array, axis=0) # Batch dimension
+    img_array = np.expand_dims(img_array, axis=-1) # Channel dimension
+    
+    return img_array
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-def preprocess_image(img):
-    """
-    Improved preprocessing to convert user-drawn digit to MNIST-like format (28x28).
-    """
-    img_array = np.array(img)
-
-    # Convert to grayscale 
-    if len(img_array.shape) == 3:
-        img_array = cv2.cvtColor(img_array, cv2.COLOR_RGB2GRAY)
-
-    # Normalize 
-    img_array = img_array.astype('float32') / 255.0  
-
-    # ensure white background, black digit
-    if np.mean(img_array) > 0.5:  
-        img_array = 1.0 - img_array
-
-    #Gaussian Blur 
-    img_array = cv2.GaussianBlur(img_array, (5,5), 0)
-
-    #detect the digit region
-    contours, _ = cv2.findContours((img_array * 255).astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-    if contours:
-        # Get the largest contour
-        contour = max(contours, key=cv2.contourArea)
-        x, y, w, h = cv2.boundingRect(contour)
-
-        # Add small padding
-        padding = max(10, int(0.2 * max(w, h)))  
-        x = max(0, x - padding)
-        y = max(0, y - padding)
-        w = min(img_array.shape[1] - x, w + 2 * padding)
-        h = min(img_array.shape[0] - y, h + 2 * padding)
-
-        digit = img_array[y:y+h, x:x+w]
-    else:
-        digit = img_array 
-
-    # Resize to 28x28
-    digit_resized = cv2.resize(digit, (28, 28), interpolation=cv2.INTER_AREA)
-
-    # Ensure the digit is centered
-    final_image = np.zeros((28, 28), dtype=np.float32)
-    h, w = digit_resized.shape
-    pad_x = (28 - w) // 2
-    pad_y = (28 - h) // 2
-    final_image[pad_y:pad_y+h, pad_x:pad_x+w] = digit_resized
-
-    # Reshape for the model
-    return final_image.reshape(1, 28, 28, 1)
-
-
 @app.route('/predict', methods=['POST'])
 def predict():
+    if not interpreter:
+        return jsonify({'error': 'Model not loaded'}), 500
+
+    data = request.get_json()
+    image_data = data.get('image')
+    
+    if not image_data:
+        return jsonify({'error': 'No image provided'}), 400
+    
     try:
-        interp = load_interpreter()
-        if interp is None:
-             return jsonify({
-                'error': "TFLite model not found. Please run convert_to_tflite.py.",
-                'digit': -1,
-                'confidence': 0.0,
-                'probabilities': [0.0] * 10
-            }), 500
-
-        data = request.json
-        image_data = data['image']
-        image_data = re.sub('^data:image/png;base64,', '', image_data)
-        img_bytes = base64.b64decode(image_data)
-        img = Image.open(BytesIO(img_bytes)).convert('L')
+        processed_input = preprocess_image(image_data)
         
-        processed_img = preprocess_image(img).reshape(1, 28, 28, 1)
+        # Get input and output details
+        input_details = interpreter.get_input_details()
+        output_details = interpreter.get_output_details()
         
-        # TFLite Inference
-        input_details = interp.get_input_details()
-        output_details = interp.get_output_details()
+        # Set input tensor
+        interpreter.set_tensor(input_details[0]['index'], processed_input)
         
-        interp.set_tensor(input_details[0]['index'], processed_img)
-        interp.invoke()
-        prediction = interp.get_tensor(output_details[0]['index'])
+        # Run inference
+        interpreter.invoke()
         
-        digit = np.argmax(prediction)
-        confidence = float(prediction[0][digit]) * 100
+        # Get output tensor
+        output_data = interpreter.get_tensor(output_details[0]['index'])
+        probabilities = output_data[0]
+        
+        prediction = int(np.argmax(probabilities))
+        confidence = float(np.max(probabilities))
         
         return jsonify({
-            'digit': int(digit),
+            'digit': prediction,
             'confidence': confidence,
-            'probabilities': prediction[0].tolist()
+            'probabilities': probabilities.tolist()
         })
+        
     except Exception as e:
-        return jsonify({
-            'error': str(e),
-            'digit': -1,
-            'confidence': 0.0,
-            'probabilities': [0.0] * 10
-        }), 500
+        return jsonify({'error': str(e)}), 500
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
-
-
+if __name__ == '__main__':
+    app.run(debug=True, port=5000)
