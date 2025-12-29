@@ -7,7 +7,6 @@ import cv2
 import os
 from PIL import Image
 from io import BytesIO
-import matplotlib.pyplot as plt
 
 app = Flask(__name__, static_folder='static')
 
@@ -105,5 +104,6 @@ def predict():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
+
 
 
