@@ -2,5 +2,6 @@ tensorflow
 flask
 numpy
 pillow
-tflite-runtime; platform_system=='Linux' # lighter for render
-
+matplotlib
+tflite-runtime; platform_system=='Linux'
+gunicorn
