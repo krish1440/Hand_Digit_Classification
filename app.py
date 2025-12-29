@@ -102,6 +102,8 @@ def predict():
             'probabilities': [0.0] * 10
         }), 500
 
-if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 10000))  # Bind to Render's dynamic port
-    app.run(host="0.0.0.0", port=port, debug=True)
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
+
+
