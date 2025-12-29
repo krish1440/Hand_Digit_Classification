@@ -1,13 +1,6 @@
-﻿Flask
+Flask
 numpy
-tensorflow
 opencv-python-headless
 pillow
-requests
-Werkzeug
-protobuf
-h5py
-scipy
-pandas
+tensorflow-cpu
 gunicorn
-matplotlib
