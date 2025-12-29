@@ -1,50 +1,116 @@
-# Handwritten Digit Recognition
+# 🧠 AI Handwritten Digit Recognition
 
-This is a web-based Handwritten Digit Recognition application using a deep learning model trained on the **MNIST dataset**. Users can draw a digit (0-9) in the provided canvas, and the model will predict the digit with confidence scores and probability distribution.
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge&logo=render&logoColor=white)](https://hand-digit-classification.onrender.com/)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![TensorFlow](https://img.shields.io/badge/TensorFlow-2.x-orange?style=for-the-badge&logo=tensorflow&logoColor=white)](https://www.tensorflow.org/)
+[![Flask](https://img.shields.io/badge/Flask-Backend-lightgrey?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
 
-## Features
-- Interactive drawing canvas to input handwritten digits
-- Predict button to classify the drawn digit
-- Clear button to reset the canvas
-- Displays predicted digit with confidence percentage
-- Shows probability distribution for all digits (0-9)
-- Responsive UI for mobile and desktop support
+> A high-performance, web-based Deep Learning application that recognizes handwritten digits (0-9) in real-time. Built with **Flask**, **TensorFlow/Keras**, and a modern **Glassmorphism UI**.
 
-## Tech Stack
-- **Frontend:** HTML, CSS ,JS
-- **Backend:** Flask (Python)
-- **Deep Learning Model:** TensorFlow/Keras trained on MNIST dataset
+---
 
-## Installation & Setup
-### Clone the repository
-```sh
+## 🚀 Live Demo
+Experience the application live: **[https://hand-digit-classification.onrender.com/](https://hand-digit-classification.onrender.com/)**
+
+---
+
+## ✨ Features
+
+- **🎨 Interactive Drawing Canvas**: Smooth, responsive HTML5 canvas for drawing digits.
+- **⚡ Real-time Inference**: Powered by a lightweight **TFLite** model for instant predictions.
+- **📊 Probability Visualization**: Dynamic bar charts showing confidence scores for all digits (0-9).
+- **💎 Premium UI/UX**: Modern dark-themed interface with glassmorphism effects and responsive design.
+- **📱 Mobile Compatible**: Fully optimized for touch devices and desktops.
+
+---
+
+## 🛠️ Tech Stack
+
+### Backend
+- **Python 3.10+**: Core logic.
+- **Flask**: Lightweight web server.
+- **TensorFlow / Keras**: Model training and architecture.
+- **TFLite**: Optimized model inference for production.
+- **Gunicorn**: Production WSGI server.
+
+### Frontend
+- **HTML5 / CSS3**: Semantic structure and custom premium styling.
+- **JavaScript (ES6+)**: Canvas logic and fetch API integration.
+- **Chart.js**: Visualizing probability distributions.
+
+---
+
+## 📂 Project Structure
+
+```text
+├── model/
+│   ├── train.py           # Training script with Data Augmentation
+│   ├── mnist_model.keras  # Master Keras Model
+│   └── mnist_model.tflite # Optimized Production Model
+├── static/
+│   ├── css/style.css      # Premium Styling
+│   └── js/script.js       # Drawing & Interaction Logic
+├── templates/
+│   └── index.html         # Main Application Interface
+├── app.py                 # Flask Application Entry Point
+├── Procfile               # Render Deployment Configuration
+├── requirements.txt       # Project Dependencies
+└── README.md              # Project Documentation
+```
+
+---
+
+## 🏃‍♂️ Run Locally
+
+Clone the repository and run the application on your local machine.
+
+### 1. Clone the Repository
+```bash
 git clone https://github.com/krish1440/Hand_Digit_Classification.git
 cd Hand_Digit_Classification
 ```
 
-### Install dependencies
-Make sure you have Python installed (preferably 3.8+). Install the required dependencies:
-```sh
+### 2. Create a Virtual Environment (Optional but Recommended)
+```bash
+# Windows
+python -m venv venv
+venv\Scripts\activate
+
+# macOS/Linux
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### 3. Install Dependencies
+```bash
 pip install -r requirements.txt
 ```
 
-### Run the application
-```sh
+### 4. Run the Application
+```bash
 python app.py
 ```
-The application will be available at `http://127.0.0.1:5000/`
+Open your browser and visit: `http://localhost:5000`
 
-## How It Works
-1. The user draws a digit in the provided canvas.
-2. The drawn image is converted into a format suitable for the MNIST-trained model.
-3. The image is sent to the backend via a POST request.
-4. The deep learning model processes the image and predicts the digit.
-5. The result and probability distribution are displayed on the frontend.
+---
 
-## Web App Live  
-[Web App Live](https://web-production-ba08.up.railway.app/)
+## 🧠 Model details
 
+The model is a **Convolutional Neural Network (CNN)** trained on the MNIST dataset.
+- **Architecture**: 3 Conv2D layers, MaxPolling, BatchNormalization, and Dropout.
+- **Accuracy**: ~99.3% on test set.
+- **Optimization**: Quantized and converted to TFLite for fast, CPU-based inference.
 
-## License
-This project is licensed under the MIT License.
+---
 
+## 👨‍💻 Author
+
+**Krish Chaudhary**
+
+[![Portfolio](https://img.shields.io/badge/Portfolio-Visit%20Site-blueviolet?style=flat-square&logo=google-chrome&logoColor=white)](https://portfolio-krish-chaudhary.vercel.app/)
+[![GitHub](https://img.shields.io/badge/GitHub-Follow-black?style=flat-square&logo=github&logoColor=white)](https://github.com/krish1440/)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/krish-chaudhary-krc8252)
+
+---
+
+<p align="center">Made with ❤️ and ☕ by Krish</p>
