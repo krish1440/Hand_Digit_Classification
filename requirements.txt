@@ -2,5 +2,5 @@ tensorflow
 flask
 numpy
 pillow
-matplotlib // for plotting in training (optional for app)
 tflite-runtime; platform_system=='Linux' # lighter for render
+
