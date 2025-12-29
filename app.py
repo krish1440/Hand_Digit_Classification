@@ -1,20 +1,34 @@
 from flask import Flask, request, jsonify, render_template
 import numpy as np
-import tensorflow as tf
+try:
+    import tflite_runtime.interpreter as tflite
+except ImportError:
+    import tensorflow.lite as tflite
 import base64
 import re
 import cv2
 import os
 from PIL import Image
 from io import BytesIO
+import matplotlib.pyplot as plt
 
 app = Flask(__name__, static_folder='static')
 
+# Load TFLite model
+model_path = 'models/model.tflite'
+# Check for model.tflite, but don't crash yet if missing (let user convert)
+interpreter = None
 
-model_path = 'models/improved_mnist_model.keras'
-if not os.path.exists(model_path):
-    raise FileNotFoundError(f"Model file {model_path} not found. Please run the training script first.")
-model = tf.keras.models.load_model(model_path)
+def load_interpreter():
+    global interpreter
+    if not os.path.exists(model_path):
+        # Fallback for dev if conversion hasn't happened yet
+        return None
+        
+    if interpreter is None:
+        interpreter = tflite.Interpreter(model_path=model_path)
+        interpreter.allocate_tensors()
+    return interpreter
 
 @app.route('/')
 def index():
@@ -76,6 +90,15 @@ def preprocess_image(img):
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
+        interp = load_interpreter()
+        if interp is None:
+             return jsonify({
+                'error': "TFLite model not found. Please run convert_to_tflite.py.",
+                'digit': -1,
+                'confidence': 0.0,
+                'probabilities': [0.0] * 10
+            }), 500
+
         data = request.json
         image_data = data['image']
         image_data = re.sub('^data:image/png;base64,', '', image_data)
@@ -84,7 +107,14 @@ def predict():
         
         processed_img = preprocess_image(img).reshape(1, 28, 28, 1)
         
-        prediction = model.predict(processed_img)
+        # TFLite Inference
+        input_details = interp.get_input_details()
+        output_details = interp.get_output_details()
+        
+        interp.set_tensor(input_details[0]['index'], processed_img)
+        interp.invoke()
+        prediction = interp.get_tensor(output_details[0]['index'])
+        
         digit = np.argmax(prediction)
         confidence = float(prediction[0][digit]) * 100
         
@@ -104,6 +134,5 @@ def predict():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
-
 
 
