@@ -24,23 +24,20 @@ def load_model():
 load_model()
 
 def preprocess_image(image_data):
-    # Decode base64 image
+
     img_bytes = base64.b64decode(image_data.split(',')[1])
     img = Image.open(io.BytesIO(img_bytes)).convert('L')  # Grayscale
     
-    # Resize to 28x28
+ 
     img = img.resize((28, 28))
     
-    # Invert colors (Canvas is black on white, MNIST is white on black)
-    # The canvas logic usually draws black on white. 
-    # If the user draws black digits on white background:
-    # We need to invert it to match MNIST (white digits on black background).
+    # match MNIST (white digits on black background).
     img_array = np.array(img)
     img_array = 255 - img_array
     
     # Normalize to [0, 1]
     img_array = img_array.astype("float32") / 255.0
-    
+
     # Reshape for model (1, 28, 28, 1)
     img_array = np.expand_dims(img_array, axis=0) # Batch dimension
     img_array = np.expand_dims(img_array, axis=-1) # Channel dimension
@@ -65,7 +62,6 @@ def predict():
     try:
         processed_input = preprocess_image(image_data)
         
-        # Get input and output details
         input_details = interpreter.get_input_details()
         output_details = interpreter.get_output_details()
         
@@ -93,3 +89,4 @@ def predict():
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
+
