@@ -76,10 +76,7 @@ canvas {
     border-radius: 12px;
     cursor: crosshair;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    /* Invert colors visually so user sees white on black if we were doing that, 
-       but here we draw black on white */
     touch-action: none;
-    /* Prevent scrolling on touch */
 }
 
 .controls {
