@@ -47,10 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Canvas Logic ---
-    // Setup canvas drawing style (Black on White for user logic? 
-    // Wait, script says "Canvas is black on white", but preprocessing does "255 - img" (Invert).
-    // So user should draw Black on White.
-    
+
     // Fill white background first
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
